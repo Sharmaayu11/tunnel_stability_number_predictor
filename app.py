@@ -79,7 +79,7 @@ with st.expander("📖 How to Use", expanded=False):
 # Sidebar
 st.sidebar.header("Navigation")
 app_mode = st.sidebar.selectbox("Choose Mode", ["Prediction", "Train New Model"])
-debug_mode = st.sidebar.checkbox("Enable Debug Mode", value=True)
+debug_mode = st.sidebar.checkbox("Enable Debug Mode", value=False)
 
 # Initialize session state
 def initialize_session_state():
