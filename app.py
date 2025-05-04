@@ -346,13 +346,13 @@ if app_mode == "Prediction":
     with st.form("prediction_form"):
         col1, col2 = st.columns(2)
         with col1:
-            sigma_ci = st.number_input("Sigma Ci (MPa)", min_value=1e-6, value=50.0, step=0.1, key="sigma_ci")
-            gsi = st.number_input("GSI", min_value=1e-6, value=50.0, step=0.1, key="gsi")
-            mi = st.number_input("mi", min_value=1e-6, value=10.0, step=0.1, key="mi")
+            sigma_ci = st.number_input("Sigma Ci (MPa)", min_value=1e-6, value=50.0, step=0.0001, key="sigma_ci")
+            gsi = st.number_input("GSI", min_value=1e-6, value=50.0, step=0.0001, key="gsi")
+            mi = st.number_input("mi", min_value=1e-6, value=10.0, step=0.0001, key="mi")
         with col2:
-            c_h = st.number_input("C/H", min_value=1e-6, value=1.0, step=0.01, key="c_h")
-            r_b = st.number_input("r/B", min_value=1e-6, value=0.5, step=0.01, key="r_b")
-            e_b = st.number_input("e/B", min_value=1e-6, value=0.1, step=0.01, key="e_b")
+            c_h = st.number_input("C/H", min_value=1e-6, value=1.0, step=0.0001, key="c_h")
+            r_b = st.number_input("r/B", min_value=1e-6, value=0.5, step=0.0001, key="r_b")
+            e_b = st.number_input("e/B", min_value=1e-6, value=0.1, step=0.0001, key="e_b")
         
         submitted = st.form_submit_button("Predict")
         
@@ -361,7 +361,7 @@ if app_mode == "Prediction":
             with st.spinner("Predicting..."):
                 predicted_n = predict_stability_number(sigma_ci, gsi, mi, c_h, r_b, e_b, model, scaler, poly, feature_names)
                 if predicted_n is not None:
-                    st.success(f"**Predicted Stability Number Ratio (N):** {predicted_n:.4f}")
+                    st.success(f"**Predicted Stability Number Ratio (N):** {predicted_n:.6f}")
 
 # Train New Model Mode
 elif app_mode == "Train New Model":
@@ -823,12 +823,12 @@ elif app_mode == "Train New Model":
             col1, col2 = st.columns(2)
             with col1:
                 new_sigma_ci = st.number_input("Sigma Ci (MPa)", min_value=1e-6, value=50.0, step=0.1, key="new_sigma_ci")
-                new_gsi = st.number_input("GSI", min_value=1e-6, value=50.0, step=0.1, key="new_gsi")
-                new_mi = st.number_input("mi", min_value=1e-6, value=10.0, step=0.1, key="new_mi")
+                new_gsi = st.number_input("GSI", min_value=1e-6, value=50.0, step=0.0001, key="new_gsi")
+                new_mi = st.number_input("mi", min_value=1e-6, value=10.0, step=0.0001, key="new_mi")
             with col2:
-                new_c_h = st.number_input("C/H", min_value=1e-6, value=1.0, step=0.01, key="new_c_h")
-                new_r_b = st.number_input("r/B", min_value=1e-6, value=0.5, step=0.01, key="new_r_b")
-                new_e_b = st.number_input("e/B", min_value=1e-6, value=0.1, step=0.01, key="new_e_b")
+                new_c_h = st.number_input("C/H", min_value=1e-6, value=1.0, step=0.0001, key="new_c_h")
+                new_r_b = st.number_input("r/B", min_value=1e-6, value=0.5, step=0.0001, key="new_r_b")
+                new_e_b = st.number_input("e/B", min_value=1e-6, value=0.1, step=0.0001, key="new_e_b")
             
             new_submitted = st.form_submit_button("Predict with New Model")
             
@@ -862,7 +862,7 @@ elif app_mode == "Train New Model":
                             st.session_state.poly, st.session_state.feature_names
                         )
                         if predicted_n is not None:
-                            st.success(f"**Predicted Stability Number Ratio (N):** {predicted_n:.4f}")
+                            st.success(f"**Predicted Stability Number Ratio (N):** {predicted_n:.6f}")
                             logger.debug("Prediction displayed successfully")
 
 # Footer
