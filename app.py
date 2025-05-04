@@ -79,7 +79,7 @@ with st.expander("📖 How to Use", expanded=False):
 # Sidebar
 st.sidebar.header("Navigation")
 app_mode = st.sidebar.selectbox("Choose Mode", ["Prediction", "Train New Model"])
-debug_mode = st.sidebar.checkbox("Enable Debug Mode", value=False)
+debug_mode = st.sidebar.checkbox("Enable Debug Mode", value=True)
 
 # Initialize session state
 def initialize_session_state():
@@ -346,13 +346,13 @@ if app_mode == "Prediction":
     with st.form("prediction_form"):
         col1, col2 = st.columns(2)
         with col1:
-            sigma_ci = st.number_input("Sigma Ci (MPa)", min_value=1e-6, value=50.0, step=0.0001, key="sigma_ci")
-            gsi = st.number_input("GSI", min_value=1e-6, value=50.0, step=0.0001, key="gsi")
-            mi = st.number_input("mi", min_value=1e-6, value=10.0, step=0.0001, key="mi")
+            sigma_ci = st.number_input("Sigma Ci (MPa)", min_value=1e-6, value=50.0, step=0.0001,format="%.4f", key="sigma_ci")
+            gsi = st.number_input("GSI", min_value=1e-6, value=50.0, step=0.0001,format="%.4f", key="gsi")
+            mi = st.number_input("mi", min_value=1e-6, value=10.0, step=0.0001,format="%.4f", key="mi")
         with col2:
-            c_h = st.number_input("C/H", min_value=1e-6, value=1.0, step=0.0001, key="c_h")
-            r_b = st.number_input("r/B", min_value=1e-6, value=0.5, step=0.0001, key="r_b")
-            e_b = st.number_input("e/B", min_value=1e-6, value=0.1, step=0.0001, key="e_b")
+            c_h = st.number_input("C/H", min_value=1e-6, value=1.0, step=0.0001,format="%.4f", key="c_h")
+            r_b = st.number_input("r/B", min_value=1e-6, value=0.5, step=0.0001,format="%.4f", key="r_b")
+            e_b = st.number_input("e/B", min_value=1e-6, value=0.1, step=0.0001,format="%.4f", key="e_b")
         
         submitted = st.form_submit_button("Predict")
         
@@ -799,71 +799,71 @@ elif app_mode == "Train New Model":
             st.session_state.training_lock = False
             st.rerun()
     
-    # Prediction form and reset button
-    if st.session_state.app_state == "trained" and st.session_state.render_phase == "trained":
-        logger.debug("Rendering prediction form")
-        if st.button("Reset to Train New Model"):
-            st.session_state.app_state = "idle"
-            st.session_state.render_phase = "idle"
-            st.session_state.uploaded_file = None
-            st.session_state.best_rf = None
-            st.session_state.scaler = None
-            st.session_state.poly = None
-            st.session_state.feature_names = None
-            st.session_state.cached_results = None
-            st.session_state.file_uploader_key += 1
-            st.session_state.training_lock = False
-            logger.debug("Reset button clicked, app_state=idle, render_phase=idle")
-            st.rerun()
+   # Train New Model Mode - Prediction Form
+if st.session_state.app_state == "trained" and st.session_state.render_phase == "trained":
+    logger.debug("Rendering prediction form")
+    if st.button("Reset to Train New Model"):
+        st.session_state.app_state = "idle"
+        st.session_state.render_phase = "idle"
+        st.session_state.uploaded_file = None
+        st.session_state.best_rf = None
+        st.session_state.scaler = None
+        st.session_state.poly = None
+        st.session_state.feature_names = None
+        st.session_state.cached_results = None
+        st.session_state.file_uploader_key += 1
+        st.session_state.training_lock = False
+        logger.debug("Reset button clicked, app_state=idle, render_phase=idle")
+        st.rerun()
+    
+    st.subheader("🔍 Predict with New Model")
+    st.markdown("Enter positive feature values to predict with the new model.")
+    
+    with st.form("new_model_prediction_form"):
+        col1, col2 = st.columns(2)
+        with col1:
+            new_sigma_ci = st.number_input("Sigma Ci (MPa)", min_value=1e-6, value=50.0, step=0.0001,format="%.4f", key="new_sigma_ci")
+            new_gsi = st.number_input("GSI", min_value=1e-6, value=50.0, step=0.0001, format="%.4f", key="new_gsi")
+            new_mi = st.number_input("mi", min_value=1e-6, value=10.0, step=0.0001,format="%.4f", key="new_mi")
+        with col2:
+            new_c_h = st.number_input("C/H", min_value=1e-6, value=1.0, step=0.0001,format="%.4f", key="new_c_h")
+            new_r_b = st.number_input("r/B", min_value=1e-6, value=0.5, step=0.0001,format="%.4f", key="new_r_b")
+            new_e_b = st.number_input("e/B", min_value=1e-6, value=0.1, step=0.0001,format="%.4f", key="new_e_b")
         
-        st.subheader("🔍 Predict with New Model")
-        st.markdown("Enter positive feature values to predict with the new model.")
+        new_submitted = st.form_submit_button("Predict with New Model")
         
-        with st.form("new_model_prediction_form"):
-            col1, col2 = st.columns(2)
-            with col1:
-                new_sigma_ci = st.number_input("Sigma Ci (MPa)", min_value=1e-6, value=50.0, step=0.1, key="new_sigma_ci")
-                new_gsi = st.number_input("GSI", min_value=1e-6, value=50.0, step=0.0001, key="new_gsi")
-                new_mi = st.number_input("mi", min_value=1e-6, value=10.0, step=0.0001, key="new_mi")
-            with col2:
-                new_c_h = st.number_input("C/H", min_value=1e-6, value=1.0, step=0.0001, key="new_c_h")
-                new_r_b = st.number_input("r/B", min_value=1e-6, value=0.5, step=0.0001, key="new_r_b")
-                new_e_b = st.number_input("e/B", min_value=1e-6, value=0.1, step=0.0001, key="new_e_b")
-            
-            new_submitted = st.form_submit_button("Predict with New Model")
-            
-            if new_submitted:
-                logger.debug("Predict with New Model button clicked")
-                with st.spinner("Predicting with new model..."):
-                    model_valid = st.session_state.best_rf is not None
-                    scaler_valid = st.session_state.scaler is not None
-                    poly_valid = st.session_state.poly is not None
-                    features_valid = st.session_state.feature_names is not None and len(st.session_state.feature_names) > 0
-                    
-                    if not (model_valid and scaler_valid and poly_valid and features_valid):
-                        logger.error("Invalid session state: model=%s, scaler=%s, poly=%s, features=%s",
-                                     model_valid, scaler_valid, poly_valid, features_valid)
-                        st.error("No trained model available. Please train a model first.")
-                        st.session_state.app_state = "idle"
-                        st.session_state.render_phase = "idle"
-                        st.session_state.uploaded_file = None
-                        st.session_state.best_rf = None
-                        st.session_state.scaler = None
-                        st.session_state.poly = None
-                        st.session_state.feature_names = None
-                        st.session_state.cached_results = None
-                        st.session_state.file_uploader_key += 1
-                        st.session_state.training_lock = False
-                        st.rerun()
-                    else:
-                        predicted_n = predict_stability_number(
-                            new_sigma_ci, new_gsi, new_mi, new_c_h, new_r_b, new_e_b,
-                            st.session_state.best_rf, st.session_state.scaler,
-                            st.session_state.poly, st.session_state.feature_names
-                        )
-                        if predicted_n is not None:
-                            st.success(f"**Predicted Stability Number Ratio (N):** {predicted_n:.6f}")
-                            logger.debug("Prediction displayed successfully")
+        if new_submitted:
+            logger.debug("Predict with New Model button clicked")
+            with st.spinner("Predicting with new model..."):
+                model_valid = st.session_state.best_rf is not None
+                scaler_valid = st.session_state.scaler is not None
+                poly_valid = st.session_state.poly is not None
+                features_valid = st.session_state.feature_names is not None and len(st.session_state.feature_names) > 0
+                
+                if not (model_valid and scaler_valid and poly_valid and features_valid):
+                    logger.error("Invalid session state: model=%s, scaler=%s, poly=%s, features=%s",
+                                 model_valid, scaler_valid, poly_valid, features_valid)
+                    st.error("No trained model available. Please train a model first.")
+                    st.session_state.app_state = "idle"
+                    st.session_state.render_phase = "idle"
+                    st.session_state.uploaded_file = None
+                    st.session_state.best_rf = None
+                    st.session_state.scaler = None
+                    st.session_state.poly = None
+                    st.session_state.feature_names = None
+                    st.session_state.cached_results = None
+                    st.session_state.file_uploader_key += 1
+                    st.session_state.training_lock = False
+                    st.rerun()
+                else:
+                    predicted_n = predict_stability_number(
+                        new_sigma_ci, new_gsi, new_mi, new_c_h, new_r_b, new_e_b,
+                        st.session_state.best_rf, st.session_state.scaler,
+                        st.session_state.poly, st.session_state.feature_names
+                    )
+                    if predicted_n is not None:
+                        st.success(f"**Predicted Stability Number Ratio (N):** {predicted_n:.6f}")
+                        logger.debug("Prediction displayed successfully")
 
 # Footer
 st.markdown("---")
